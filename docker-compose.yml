@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    container_name: lamp_app
+    volumes:
+      - ./ims:/var/www/html
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    networks:
+      - lampnet
+
+  db:
+    image: mysql:8.0
+    container_name: lamp_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: imsdb
+      MYSQL_USER: imsuser
+      MYSQL_PASSWORD: imspass
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - lampnet
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: lamp_phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      - lampnet
+
+volumes:
+  db_data:
+
+networks:
+  lampnet:
